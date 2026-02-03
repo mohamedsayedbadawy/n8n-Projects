@@ -1,0 +1,151 @@
+{
+  "name": "2_Gmail_automation_with_excel_sheet",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -384,
+        -240
+      ],
+      "id": "b0a8d9e0-d6b1-4869-9c89-4ef6d67326a5",
+      "name": "When chat message received",
+      "webhookId": "871ac404-1eff-4efa-b86d-a2af912e6389"
+    },
+    {
+      "parameters": {
+        "sendTo": "MohamedSayedBadawy200@gmail.com",
+        "subject": "Test_Gmail_automation",
+        "emailType": "text",
+        "message": "= {{ $json.chatInput }},{{ $workflow.name }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -176,
+        -240
+      ],
+      "id": "eb8dbe5a-ba68-4b72-a54f-9ffe25ecc7c7",
+      "name": "Send a message",
+      "webhookId": "db867408-3a96-48d0-b7b0-da0a12d4889b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fo8FwuV6tGrrC1TT",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "17GBT2mydcqBKtoWfsoSB935e97ml5QtoB8uFnXhcECY",
+          "mode": "list",
+          "cachedResultName": "Test n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17GBT2mydcqBKtoWfsoSB935e97ml5QtoB8uFnXhcECY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17GBT2mydcqBKtoWfsoSB935e97ml5QtoB8uFnXhcECY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Message": "={{ $('When chat message received').item.json.chatInput }}",
+            "sender": "={{ $workflow.name }}"
+          },
+          "matchingColumns": [
+            "Message"
+          ],
+          "schema": [
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sender",
+              "displayName": "sender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        128,
+        -224
+      ],
+      "id": "c9bdb473-16d3-4a8d-9c8b-10e38a8cf65a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WiDdSXrbxRjtRrF3",
+          "name": "Google Sheets account 4"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Africa/Cairo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "6e4bb4d6-8635-47ff-a5aa-e1037930716d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "62c7619f844c17c7db6e4812986ae2b51c7c81413a33d5444dc04a3fb8bd097d"
+  },
+  "id": "YQumYaaqWt5fCZ63",
+  "tags": []
+}

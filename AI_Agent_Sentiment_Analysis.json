@@ -1,0 +1,214 @@
+{
+  "name": "AI_Agent_Sentiment_Analysis",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Review",
+        "formDescription": "This form to take your review about our product",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "What's your name ?",
+              "placeholder": "ex.Moahmed Badawy",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Review",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -432,
+        -16
+      ],
+      "id": "cb453cdd-09b0-445d-bdde-536eb22aca82",
+      "name": "On form submission",
+      "webhookId": "a80b8661-b82f-4e8f-97b1-606cc5fa907c"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo-0125",
+          "mode": "list",
+          "cachedResultName": "GPT-3.5-TURBO-0125"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "This is the customer review:\nYou are an expert in sentiment analysis. When I give you a customer review, classify its overall sentiment and reply with exactly one word: \"Positive\", \"Negative\", er \"Neutral\". Do not add any extra text or explanation-just the single label."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "text"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        -96
+      ],
+      "id": "1bc68c62-9d91-4c37-bd02-ea2e1eff2dda",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "uz75NJNh7qdMEzLj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        128,
+        176
+      ],
+      "id": "bdd8a377-094a-4be8-af7c-6b0136d3b491",
+      "name": "Merge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1bk4RgeuzipdyqSPXHHVG7Pe61BseVg_Nt-fgu86wMV4",
+          "mode": "list",
+          "cachedResultName": "Sentiment analysis ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bk4RgeuzipdyqSPXHHVG7Pe61BseVg_Nt-fgu86wMV4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bk4RgeuzipdyqSPXHHVG7Pe61BseVg_Nt-fgu86wMV4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('On form submission').item.json['What\\'s your name ?'] }}",
+            "Review": "={{ $('On form submission').item.json.Review }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review",
+              "displayName": "Review",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        336,
+        176
+      ],
+      "id": "69356588-0145-45e8-98aa-0a8cc77911c7",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WiDdSXrbxRjtRrF3",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "\nThis project isn't working because the openai alo key doesn't work because of there is no credits in it "
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        112,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "e27f20eb-30df-4cea-8f1f-67d41897b6e1",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "5d6b3312-95b9-4c3c-9685-c1cb87ab65cd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "62c7619f844c17c7db6e4812986ae2b51c7c81413a33d5444dc04a3fb8bd097d"
+  },
+  "id": "U8ti2o4Fn6jd0CgIlraTx",
+  "tags": []
+}

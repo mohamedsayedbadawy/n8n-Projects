@@ -1,0 +1,156 @@
+{
+  "name": "AI_Agent_IT_summarization",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "airtableTokenApi",
+        "baseId": {
+          "__rl": true,
+          "value": "https://airtable.com/appYmi8zFAUnD8fi5/tblAa1PUPIJCdVxY2/viwo1LcHjoBrySjwn?blocks=hide",
+          "mode": "url"
+        },
+        "tableId": {
+          "__rl": true,
+          "value": "https://airtable.com/appYmi8zFAUnD8fi5/tblAa1PUPIJCdVxY2/viwo1LcHjoBrySjwn?blocks=hide",
+          "mode": "url"
+        },
+        "triggerField": "Ticket ID",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        0
+      ],
+      "id": "5331178f-ac0f-4332-a30b-3bff1ce19327",
+      "name": "Airtable Trigger",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "kbHksnZiVMNVHbfh",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "=gpt-4o",
+          "mode": "id"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "=user",
+              "content": "=You are the IT Support Team’s coordinator. Your task is to collect incoming information about new support tickets and produce a concise summary to email to the IT management. The email should be signed with “IT Support Team.”\nHere are the details of the support tickets:\nTicket ID:{{ $json.fields['Ticket ID'] }}\nUser:{{ $json.fields.User }}\nIssue:{{ $json.fields.Issue }}\nPriority:{{ $json.fields.Priority }}\nDate Submitted:{{ $json.fields['Date Submitted'] }}\nStatus:{{ $json.fields.Status }}\nPlease provide the following output parameters:\nEmail_subject\nEmail_content\nMake the content clean and with bullet points\n\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a9d99b09-0473-4c88-b661-764721b0f667",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "uz75NJNh7qdMEzLj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "syd37175@gmail.com",
+        "subject": "put email subject  here ",
+        "emailType": "text",
+        "message": "put email body here ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        0
+      ],
+      "id": "48d0df03-5946-4333-b988-f6b7ba9904cd",
+      "name": "Send a message",
+      "webhookId": "0d00c36e-f07e-4ecf-b077-df693a50a77f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fo8FwuV6tGrrC1TT",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "\nThis project isn't working because the openai alo key doesn't work because of there is no credits in it "
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        128,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "6d4acb4a-11d8-4c58-b4bb-869a85fbc664",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Airtable Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "89a19d7c-c01b-403b-ac31-afa4c389f2a4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "62c7619f844c17c7db6e4812986ae2b51c7c81413a33d5444dc04a3fb8bd097d"
+  },
+  "id": "6VaiwFfvmj-x5a_4ZUGgU",
+  "tags": []
+}

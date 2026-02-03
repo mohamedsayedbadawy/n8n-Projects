@@ -1,0 +1,72 @@
+{
+  "name": "1_Gmail_automation",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -208,
+        -80
+      ],
+      "id": "c1c2c68a-83d5-4e25-a87c-f02778f78771",
+      "name": "When chat message received",
+      "webhookId": "25319086-c975-49d6-a655-c52a10ba6eac"
+    },
+    {
+      "parameters": {
+        "sendTo": "amirmiro2905@gmail.com",
+        "subject": "Test_Gmail_automation",
+        "emailType": "text",
+        "message": "= {{ $json.chatInput }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        -64
+      ],
+      "id": "15e4003d-2792-4066-bf2b-8208ee068e50",
+      "name": "Send a message",
+      "webhookId": "3f2dbc7e-bbcc-4fa7-9b89-bd7f8d0065dd",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fo8FwuV6tGrrC1TT",
+          "name": "Gmail account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Africa/Cairo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "739c1743-1ba5-438a-8767-76ad22614284",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "62c7619f844c17c7db6e4812986ae2b51c7c81413a33d5444dc04a3fb8bd097d"
+  },
+  "id": "fto45jaLXdqKtwFb8F7b_",
+  "tags": []
+}

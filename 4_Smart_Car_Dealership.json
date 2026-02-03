@@ -1,0 +1,163 @@
+{
+  "name": "4_Smart_Car_Dealership",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "MohamedSayedBadawy200@gmail.com",
+        "subject": "New Car Has been sealed ",
+        "emailType": "text",
+        "message": "=There is a new car sealed,And there are all details \nModel:{{ $json.body['Car Model'] }}\nPrice:{{ $json.body.Price }}\nBuyer:{{ $json.body.Buyer }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -192,
+        -96
+      ],
+      "id": "02df37fd-7b88-46e8-af15-297bdf238246",
+      "name": "Send a message",
+      "webhookId": "ec2a8606-94e1-497a-8e5e-8fb8d207d794",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fo8FwuV6tGrrC1TT",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "18VoTcCDHpr3ZvkXn68zop9t6OwaV4NJU3lJ4IhYoogA",
+          "mode": "list",
+          "cachedResultName": "Smart Car Dealership",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18VoTcCDHpr3ZvkXn68zop9t6OwaV4NJU3lJ4IhYoogA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17GBT2mydcqBKtoWfsoSB935e97ml5QtoB8uFnXhcECY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Car ": "={{ $json.body['Car Model'] }}",
+            "Price ": "={{ $json.body.Price }}",
+            "New Owner ": "={{ $json.body.Buyer }}"
+          },
+          "matchingColumns": [
+            "Message"
+          ],
+          "schema": [
+            {
+              "id": "Car ",
+              "displayName": "Car ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Price ",
+              "displayName": "Price ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Owner ",
+              "displayName": "New Owner ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -192,
+        -272
+      ],
+      "id": "e437baf9-9ac5-48ad-ba8a-7c543dfc8cc7",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WiDdSXrbxRjtRrF3",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ab66875d-1fce-4ce2-a6f0-56a71f596854",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        -192
+      ],
+      "id": "0a31aea6-082a-4e32-8209-729df9a8e7fc",
+      "name": "Webhook",
+      "webhookId": "ab66875d-1fce-4ce2-a6f0-56a71f596854"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Africa/Cairo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "47ebd136-ec17-4543-b133-87e525b8612f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "62c7619f844c17c7db6e4812986ae2b51c7c81413a33d5444dc04a3fb8bd097d"
+  },
+  "id": "8SjTqHL4nYQTdjq2",
+  "tags": []
+}
