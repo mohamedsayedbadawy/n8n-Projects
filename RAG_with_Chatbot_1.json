@@ -1,0 +1,469 @@
+{
+  "name": "RAG_with_Chatbot_1",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1O4X5e5m4MuzSzD6tq1rUjeakWFyMHhee",
+          "mode": "list",
+          "cachedResultName": "Apple Reports",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1O4X5e5m4MuzSzD6tq1rUjeakWFyMHhee"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        -304
+      ],
+      "id": "45ddb0d1-c759-45ef-adfe-70c058ca59c6",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8at2a0xvrgsyN0GG",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -944,
+        -304
+      ],
+      "id": "5f4bf761-a408-48da-a85a-d44da503164f",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8at2a0xvrgsyN0GG",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8nrag",
+          "mode": "list",
+          "cachedResultName": "n8nrag"
+        },
+        "embeddingBatchSize": 1,
+        "options": {
+          "clearNamespace": false,
+          "pineconeNamespace": "Apple"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -704,
+        -304
+      ],
+      "id": "d47b5fed-22fb-4573-b4b0-da4c482f640c",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "9ZFUCQ0N7DImjWlO",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -832,
+        -128
+      ],
+      "id": "b1ee4027-a554-43ee-912c-86e1dbeaa01b",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "XFUQDOV10R5qZccy",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "n8n file ",
+                "value": "={{ $json.name }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -656,
+        -128
+      ],
+      "id": "6e95ff17-a47b-44b6-8467-c039b8bc0719",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "content": "## Knowledge Base  ",
+        "height": 368,
+        "width": 864
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1184,
+        -368
+      ],
+      "typeVersion": 1,
+      "id": "d24165c6-a2e7-4992-a70c-2174c62103bb",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# ChatBot ",
+        "height": 672,
+        "width": 928
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -384
+      ],
+      "id": "4db3189d-7e04-4808-9bb0-1ff0077244b5",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are an AI assistant specialized in analyzing Apple’s quarterly financial reports. Your main goal is to answer questions accurately and precisely using the vector database, which contains relevant Q1 and Q2 reports.\n\nProvide only information that comes directly from these reports or verified data. If the requested information is missing or unclear, explicitly state that there is insufficient data.\n\nKeep responses concise and to the point. Include specific numbers and facts whenever possible, and clearly indicate whether the information is sourced from Q1 or Q2.\n\nDeliver quick, reliable insights into Apple’s quarterly financials without adding unnecessary details."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -32,
+        -272
+      ],
+      "id": "9e55e8bd-2caf-49e0-9bf3-c165520e2f12",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        -64
+      ],
+      "id": "693fec6b-3aaa-4356-bb50-31dd0d76f863",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "XFUQDOV10R5qZccy",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -16,
+        -64
+      ],
+      "id": "428e283a-820a-43ed-8b76-4a1c48d797f2",
+      "name": "Simple Memory",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "description": "Returns documents related to Apple Q1 reports, including financials, outlook, margins, and all key details from the earnings reports.\n\n",
+        "topK": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        -128
+      ],
+      "id": "7aab830d-483c-4688-b064-921b507656bf",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        496,
+        48
+      ],
+      "id": "a2f3846a-c5f6-4668-838a-80310192ad9a",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "XFUQDOV10R5qZccy",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8nrag",
+          "mode": "list",
+          "cachedResultName": "n8nrag"
+        },
+        "options": {
+          "pineconeNamespace": "Apple"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        32
+      ],
+      "id": "c7cea7f3-5308-4486-8205-07441af95353",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "9ZFUCQ0N7DImjWlO",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        176
+      ],
+      "id": "cfe47793-d08e-4b80-a96b-ded439c9dd09",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "XFUQDOV10R5qZccy",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -240,
+        -256
+      ],
+      "id": "2de85519-f4bf-4f9a-9dc6-f2cd274aa37b",
+      "name": "When chat message received",
+      "webhookId": "38054c6b-c432-4f7c-a7d5-3abf108aced2"
+    },
+    {
+      "parameters": {
+        "content": "### this project has two problems  \n- existed  files  will not turn on the trigger \n- even if you press excute the  workflow  there will be one file only which will be downloaded "
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1008,
+        48
+      ],
+      "typeVersion": 1,
+      "id": "da226423-cdfc-4ff0-950c-1b32eae36ed8",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "c2572c2c-0260-4769-8430-e77a8661376e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "62c7619f844c17c7db6e4812986ae2b51c7c81413a33d5444dc04a3fb8bd097d"
+  },
+  "id": "XQmRGqmPKuPHW7GmYAhvw",
+  "tags": []
+}

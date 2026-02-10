@@ -1,0 +1,806 @@
+{
+  "name": "RAG_with_Chatbot_V4",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8nrag",
+          "mode": "list",
+          "cachedResultName": "n8nrag"
+        },
+        "embeddingBatchSize": 1,
+        "options": {
+          "clearNamespace": false,
+          "pineconeNamespace": "={{ $('Edit Fields').item.json['File_name '] }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -768,
+        -400
+      ],
+      "id": "58de931f-68b3-45a1-98b0-9bdd58fe6d03",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "9ZFUCQ0N7DImjWlO",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -768,
+        -160
+      ],
+      "id": "60f30aa9-e161-492c-8769-72c130a49dff",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "XFUQDOV10R5qZccy",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -592,
+        -160
+      ],
+      "id": "57ded664-9b80-49f3-8e9b-f86350ca0b98",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "content": "# Knowledge Base  ",
+        "height": 672,
+        "width": 912,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1104,
+        -512
+      ],
+      "typeVersion": 1,
+      "id": "34197a5a-8bcf-4a86-a5c4-93a8f35ae360",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# ChatBot ",
+        "height": 704,
+        "width": 992
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -496
+      ],
+      "id": "0f976f55-63ea-456f-9df5-d21a19dedc95",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "=You are an AI assistant specialized in analyzing Apple’s quarterly financial reports. Your main goal is to answer questions accurately and precisely using the vector database, which contains relevant Q1 and Q2 reports.\n\nProvide only information that comes directly from these reports or verified data. If the requested information is missing or unclear, explicitly state that there is insufficient data.\n\nKeep responses concise and to the point. Include specific numbers and facts whenever possible, and clearly indicate whether the information is sourced from Q1 or Q2.\n\nDeliver quick, reliable insights into Apple’s quarterly financials without adding unnecessary details."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        272,
+        -448
+      ],
+      "id": "55f92355-7de2-4bee-b275-619362b7ec98",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        -176
+      ],
+      "id": "daacfad0-54bd-455d-ab9e-540eb98bda50",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "XFUQDOV10R5qZccy",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Returns documents related to Apple Q1 &Q2 reports, including financials, outlook, margins, and all key details from the earnings reports.\n\n",
+        "topK": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        512,
+        -288
+      ],
+      "id": "bfd93434-10f6-41e5-9843-7da11bf46430",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        -128
+      ],
+      "id": "1bbf6dc4-af58-47e5-bb8d-cdfb2d66bd43",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "XFUQDOV10R5qZccy",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8nrag",
+          "mode": "list",
+          "cachedResultName": "n8nrag"
+        },
+        "options": {
+          "pineconeNamespace": "={{ $json.file_name }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        -96
+      ],
+      "id": "1d88a247-4c9b-4edd-836e-35151906aba8",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "9ZFUCQ0N7DImjWlO",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        256,
+        64
+      ],
+      "id": "1803da29-60bb-4094-9a7e-55dc7d4f27cc",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "XFUQDOV10R5qZccy",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -112,
+        -432
+      ],
+      "id": "bd497462-4395-469f-b905-50fdf90691c3",
+      "name": "When chat message received",
+      "webhookId": "f9ad83ad-3687-4057-b0db-daf66315480a"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2128,
+        -128
+      ],
+      "id": "e9f64cab-c89a-4cd3-a753-53ad3c748174",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1O4X5e5m4MuzSzD6tq1rUjeakWFyMHhee",
+            "mode": "list",
+            "cachedResultName": "Apple Reports",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1O4X5e5m4MuzSzD6tq1rUjeakWFyMHhee"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1920,
+        -128
+      ],
+      "id": "e94a0ed3-7f89-4e87-ad9a-2bc7437ad04b",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8at2a0xvrgsyN0GG",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Code in JavaScript').item.json.fileId }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1280,
+        -192
+      ],
+      "id": "7b43e2f4-316b-4352-aabb-a3da9fb07ffc",
+      "name": "Download file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8at2a0xvrgsyN0GG",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -992,
+        -32
+      ],
+      "id": "daab68bb-9a16-485f-9206-33842683a985",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        16
+      ],
+      "id": "95dfbe1c-0696-4983-825b-738f4acb2e42",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6fee71ec-d89b-435f-9db4-c9b271e5ed50",
+              "name": "file_name",
+              "value": "={{ $json.chatInput.match(/Q[12]/i)?.[0].toUpperCase().trim() + '.pdf' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        -448
+      ],
+      "id": "9e17750f-2d45-4b5c-8052-a46fa00b359f",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1FUpfMWPLQC9JRMQ63vBdpKe4Y4YspnZQ_RtmFrDVIGM",
+          "mode": "list",
+          "cachedResultName": "Downloaded Docs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FUpfMWPLQC9JRMQ63vBdpKe4Y4YspnZQ_RtmFrDVIGM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FUpfMWPLQC9JRMQ63vBdpKe4Y4YspnZQ_RtmFrDVIGM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1904,
+        -416
+      ],
+      "id": "8cb72b4f-b497-4cb1-befc-f080d968c333",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WiDdSXrbxRjtRrF3",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -896,
+        -448
+      ],
+      "id": "5ef3fbc0-fadb-474c-90d5-0f4d09095180",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const all = $input.all();\n\nconst normName = (s) =>\n  (s ?? '')\n    .toString()\n    .trim()\n    .toLowerCase()\n    .replace(/\\.[^/.]+$/, ''); // remove ANY extension\n\nconst normId = (s) => (s ?? '').toString().trim();\n\nconst pick = (obj, keys) => {\n  for (const k of keys) {\n    if (obj && obj[k] !== undefined && obj[k] !== null && obj[k] !== '') return obj[k];\n  }\n  return null;\n};\n\n// --- Split items into Drive vs Sheet ---\nconst driveItems = [];\nconst sheetItems = [];\n\nfor (const it of all) {\n  const j = it.json || {};\n\n  const looksDrive =\n    'mimeType' in j || 'owners' in j || 'createdTime' in j || 'modifiedTime' in j;\n\n  const looksSheet =\n    'fileName' in j || 'fileId' in j || 'file_name' in j || 'file_id' in j ||\n    'File Name' in j || 'File ID' in j;\n\n  if (looksDrive && !looksSheet) driveItems.push(it);\n  else if (looksSheet && !looksDrive) sheetItems.push(it);\n  else {\n    // fallback\n    if (looksSheet) sheetItems.push(it);\n    else driveItems.push(it);\n  }\n}\n\n// --- Build Sheet indexes ---\nconst sheetIds = new Set();\nconst sheetNames = new Set();\n\nfor (const it of sheetItems) {\n  const j = it.json || {};\n  const sName = pick(j, ['fileName','filename','file_name','File Name','file name','name','title']);\n  const sId   = pick(j, ['fileId','file_id','File ID','file id','id']);\n\n  if (sId) sheetIds.add(normId(sId));\n  if (sName) sheetNames.add(normName(sName));\n}\n\n// --- Return ONLY NEW files from Drive ---\nconst out = [];\n\nfor (const it of driveItems) {\n  const j = it.json || {};\n\n  // ignore folders\n  if (j.mimeType === 'application/vnd.google-apps.folder') continue;\n\n  const dName = pick(j, ['name','title']);\n  const dId   = pick(j, ['id','fileId','file_id']);\n\n  if (!dName || !dId) continue;\n\n  const idInSheet = sheetIds.has(normId(dId));\n  const nameInSheet = sheetNames.has(normName(dName));\n\n  // If either ID or normalized name exists in sheet -> NOT new\n  if (!idInSheet && !nameInSheet) {\n    out.push({\n      json: {\n        status: 'newFile',\n        fileId: normId(dId),\n        fileName: dName,                 // full name with extension\n        fileNameKey: normName(dName),    // normalized for debug\n      },\n    });\n  }\n}\n\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1584,
+        -416
+      ],
+      "id": "7678e7f6-6eba-4b01-9ad7-31df67fac059",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1712,
+        -272
+      ],
+      "id": "eb7a5be6-b06b-4ed9-b530-44f0f2dff546",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1FUpfMWPLQC9JRMQ63vBdpKe4Y4YspnZQ_RtmFrDVIGM",
+          "mode": "list",
+          "cachedResultName": "Downloaded Docs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FUpfMWPLQC9JRMQ63vBdpKe4Y4YspnZQ_RtmFrDVIGM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FUpfMWPLQC9JRMQ63vBdpKe4Y4YspnZQ_RtmFrDVIGM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "File name ": "={{ $json.fileName }}",
+            "File ID": "={{ $json.fileId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "File name ",
+              "displayName": "File name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File ID",
+              "displayName": "File ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1456,
+        -240
+      ],
+      "id": "1c11640e-659d-4b86-98ed-b7465f56728d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WiDdSXrbxRjtRrF3",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f10d49bf-0f25-485d-b3b2-ffeeffc5bcdb",
+              "name": "File_name ",
+              "value": "={{ $('Code in JavaScript').item.json.fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "8feda0d1-f7d6-4a1d-9e38-6ec482b0caaf",
+              "name": "File_ID",
+              "value": "={{ $('Code in JavaScript').item.json.fileId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1344,
+        -416
+      ],
+      "id": "968ceace-dfd2-456d-a573-576fd60e1a31",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "# Download Files ",
+        "height": 560,
+        "width": 1088,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2208,
+        -496
+      ],
+      "typeVersion": 1,
+      "id": "867ffb60-cb2f-4f8a-b76c-4016ebafa224",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2112,
+        -416
+      ],
+      "id": "42c04b73-c739-4a34-b1ae-ff809efbdfa2",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Download file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "72944a4f-c8a3-4113-b472-552c3b362e40",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "62c7619f844c17c7db6e4812986ae2b51c7c81413a33d5444dc04a3fb8bd097d"
+  },
+  "id": "lKNPfKpSyEXxltwt",
+  "tags": []
+}
