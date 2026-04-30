@@ -1,0 +1,11 @@
+services:
+  ava-kb:
+    build: .
+    container_name: ava_knowledge_base
+    restart: unless-stopped
+    ports:
+      - "8001:8001"            # accessible on host at 192.168.1.57:8001
+    volumes:
+      - ./data:/kb/data        # SQLite DB persists here
+      - ./uploads:/kb/uploads  # PDFs stored here
+    network_mode: host         # shares host network — AVA calls http://localhost:8001

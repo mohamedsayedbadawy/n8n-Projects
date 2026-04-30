@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AVA · Knowledge Base</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:       #0a0c0f;
+    --surface:  #111418;
+    --border:   #1e2530;
+    --accent:   #00d4ff;
+    --accent2:  #00ff9d;
+    --warn:     #ff6b35;
+    --text:     #c8d6e5;
+    --muted:    #4a5568;
+    --mono:     'IBM Plex Mono', monospace;
+    --sans:     'IBM Plex Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── Header ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--accent);
+    box-shadow: 0 0 12px rgba(0,212,255,.2);
+  }
+  .logo-text { font-family: var(--mono); font-size: 18px; font-weight: 500; letter-spacing: 2px; }
+  .logo-sub  { font-size: 11px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; font-family: var(--mono); }
+
+  .status-bar {
+    display: flex; gap: 20px; align-items: center;
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+  }
+  .status-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--accent2);
+    box-shadow: 0 0 8px var(--accent2);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* ── Stats ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 32px 0;
+  }
+  .stat {
+    background: var(--surface);
+    padding: 20px 24px;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; }
+
+  /* ── Two column layout ── */
+  .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media(max-width:700px){ .columns { grid-template-columns: 1fr; } .stats-row { grid-template-columns: 1fr; } }
+
+  /* ── Panel ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .panel-header .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .panel-body { padding: 20px; }
+
+  /* ── Drop zone ── */
+  .dropzone {
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+  }
+  .dropzone:hover, .dropzone.drag-over {
+    border-color: var(--accent);
+    background: rgba(0,212,255,.04);
+  }
+  .dropzone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  }
+  .dz-icon { font-size: 32px; margin-bottom: 12px; opacity: .5; }
+  .dz-text { font-size: 14px; color: var(--muted); }
+  .dz-text span { color: var(--accent); }
+
+  /* ── Upload progress ── */
+  .progress-wrap { display: none; margin-top: 16px; }
+  .progress-bar-bg {
+    height: 3px; background: var(--border); border-radius: 2px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; background: var(--accent);
+    width: 0%; transition: width .3s ease;
+    box-shadow: 0 0 8px var(--accent);
+  }
+  .progress-label { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+  /* ── Toast ── */
+  .toast {
+    display: none;
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    border-left: 3px solid;
+  }
+  .toast.success { background: rgba(0,255,157,.06); border-color: var(--accent2); color: var(--accent2); }
+  .toast.error   { background: rgba(255,107,53,.06); border-color: var(--warn);   color: var(--warn); }
+
+  /* ── Search ── */
+  .search-input-wrap { position: relative; margin-bottom: 12px; }
+  .search-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 44px 10px 14px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-btn {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--accent); font-size: 16px;
+    padding: 4px;
+  }
+  .search-results { display: none; }
+  .result-item {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    animation: fadeIn .2s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+  .result-meta { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+
+  /* ── Documents list ── */
+  .doc-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: border-color .15s;
+    animation: fadeIn .2s ease;
+  }
+  .doc-item:hover { border-color: var(--accent); }
+  .doc-info { flex: 1; min-width: 0; }
+  .doc-name { font-family: var(--mono); font-size: 12px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .doc-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .doc-badges { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+  .badge {
+    font-family: var(--mono); font-size: 10px; padding: 2px 7px;
+    border-radius: 3px; letter-spacing: .5px;
+  }
+  .badge-pages  { background: rgba(0,212,255,.1); color: var(--accent); border: 1px solid rgba(0,212,255,.2); }
+  .badge-chunks { background: rgba(0,255,157,.1); color: var(--accent2); border: 1px solid rgba(0,255,157,.2); }
+  .del-btn {
+    background: none; border: 1px solid transparent;
+    color: var(--muted); font-size: 16px; cursor: pointer;
+    padding: 4px 8px; border-radius: 4px;
+    transition: all .15s; flex-shrink: 0; margin-left: 8px;
+  }
+  .del-btn:hover { color: var(--warn); border-color: rgba(255,107,53,.3); }
+
+  .empty { text-align: center; padding: 32px; color: var(--muted); font-family: var(--mono); font-size: 12px; }
+
+  /* ── AVA Integration box ── */
+  .integration-panel {
+    margin-top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .integration-panel .panel-header { background: rgba(0,212,255,.04); }
+  .code-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+    white-space: pre;
+    overflow-x: auto;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .code-block .k { color: #7ec8e3; }
+  .code-block .s { color: var(--accent2); }
+  .code-block .c { color: var(--muted); }
+  .copy-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); font-family: var(--mono); font-size: 10px;
+    padding: 4px 10px; border-radius: 4px; cursor: pointer;
+    transition: all .15s; letter-spacing: 1px;
+  }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── Section label ── */
+  .section-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">KB</div>
+        <div>
+          <div class="logo-text">AVA</div>
+          <div class="logo-sub">Knowledge Base</div>
+        </div>
+      </div>
+      <div class="status-bar">
+        <div class="status-dot"></div>
+        <span id="statusText">ONLINE</span>
+        <span style="color:var(--border)">|</span>
+        <span id="serverAddr">localhost:8001</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-val" id="statDocs">—</div>
+      <div class="stat-label">Documents</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" id="statPages">—</div>
+      <div class="stat-label">Pages</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" id="statChunks">—</div>
+      <div class="stat-label">Indexed Chunks</div>
+    </div>
+  </div>
+
+  <!-- Main columns -->
+  <div class="columns">
+
+    <!-- Left: Upload + Search -->
+    <div>
+      <div class="panel">
+        <div class="panel-header"><span class="dot"></span>Upload PDF</div>
+        <div class="panel-body">
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="fileInput" accept=".pdf"/>
+            <div class="dz-icon">📄</div>
+            <div class="dz-text">Drop PDF here or <span>click to browse</span></div>
+          </div>
+          <div class="progress-wrap" id="progressWrap">
+            <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+            <div class="progress-label" id="progressLabel">Processing…</div>
+          </div>
+          <div class="toast" id="toast"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:24px">
+        <div class="panel-header"><span class="dot" style="background:var(--accent2)"></span>Test Search</div>
+        <div class="panel-body">
+          <div class="search-input-wrap">
+            <input class="search-input" id="searchInput" placeholder="Type a question to test…" />
+            <button class="search-btn" id="searchBtn">⌕</button>
+          </div>
+          <div class="search-results" id="searchResults"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Documents -->
+    <div>
+      <div class="panel" style="height:100%">
+        <div class="panel-header"><span class="dot" style="background:var(--warn)"></span>Indexed Documents</div>
+        <div class="panel-body" id="docList">
+          <div class="empty">No documents yet</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- AVA Integration -->
+  <div class="integration-panel">
+    <div class="panel-header"><span class="dot" style="background:#a78bfa"></span>AVA Integration — ai-agent.local.yaml</div>
+    <div class="panel-body">
+      <p class="section-label">Add this tool to your AVA config so it calls the knowledge base during conversations:</p>
+
+      <div class="code-block" id="yamlBlock"><button class="copy-btn" onclick="copyCode('yamlBlock')">COPY</button><span class="c"># Add inside your context in ai-agent.local.yaml</span>
+<span class="k">contexts</span>:
+  <span class="k">default</span>:
+    <span class="k">prompt</span>: <span class="s">>-</span>
+      <span class="s">You are Ava, an AI voice assistant.</span>
+      <span class="s">When a caller asks a question about our products,</span>
+      <span class="s">services, or policies, call the knowledge_base tool</span>
+      <span class="s">FIRST, then speak the answer you receive.</span>
+
+    <span class="k">tools</span>:
+      - <span class="k">name</span>: <span class="s">knowledge_base</span>
+        <span class="k">type</span>: <span class="s">http</span>
+        <span class="k">description</span>: <span class="s">"Search company knowledge base for answers"</span>
+        <span class="k">url</span>: <span class="s">"http://localhost:8001/search"</span>
+        <span class="k">method</span>: <span class="s">GET</span>
+        <span class="k">parameters</span>:
+          <span class="k">q</span>:
+            <span class="k">type</span>: <span class="s">string</span>
+            <span class="k">description</span>: <span class="s">"The caller's question"</span>
+            <span class="k">required</span>: <span class="k">true</span>
+        <span class="k">response_field</span>: <span class="s">answer</span></div>
+
+      <p class="section-label" style="margin-top:16px">Direct API endpoint (for testing or custom integration):</p>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">COPY</button><span class="c"># Search the knowledge base</span>
+<span class="k">GET</span> <span class="s">http://localhost:8001/search?q=your+question+here</span>
+
+<span class="c"># Returns:</span>
+{
+  <span class="s">"answer"</span>: <span class="s">"Spoken answer for AVA"</span>,
+  <span class="s">"results"</span>: [...],
+  <span class="s">"source_count"</span>: 2
+}</div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+const API = '';   // same origin
+
+// ─── Stats ────────────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const r = await fetch(`${API}/stats`);
+    const d = await r.json();
+    document.getElementById('statDocs').textContent   = d.total_documents;
+    document.getElementById('statPages').textContent  = d.total_pages;
+    document.getElementById('statChunks').textContent = d.total_chunks;
+  } catch {}
+}
+
+// ─── Documents ────────────────────────────────────────────────────────────────
+async function loadDocs() {
+  const list = document.getElementById('docList');
+  try {
+    const r = await fetch(`${API}/documents`);
+    const d = await r.json();
+    if (!d.documents.length) {
+      list.innerHTML = '<div class="empty">No documents indexed yet.<br>Upload a PDF to get started.</div>';
+      return;
+    }
+    list.innerHTML = d.documents.map(doc => `
+      <div class="doc-item" id="doc-${doc.id}">
+        <div class="doc-info">
+          <div class="doc-name" title="${doc.filename}">📄 ${doc.filename}</div>
+          <div class="doc-meta">${new Date(doc.uploaded_at).toLocaleDateString()}</div>
+          <div class="doc-badges">
+            <span class="badge badge-pages">${doc.pages} pages</span>
+            <span class="badge badge-chunks">${doc.chunks} chunks</span>
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteDoc(${doc.id})" title="Delete">✕</button>
+      </div>
+    `).join('');
+  } catch {
+    list.innerHTML = '<div class="empty">Could not load documents.</div>';
+  }
+}
+
+async function deleteDoc(id) {
+  if (!confirm('Delete this document from knowledge base?')) return;
+  await fetch(`${API}/documents/${id}`, { method: 'DELETE' });
+  document.getElementById(`doc-${id}`)?.remove();
+  loadStats();
+  if (!document.querySelector('.doc-item'))
+    document.getElementById('docList').innerHTML = '<div class="empty">No documents indexed yet.</div>';
+}
+
+// ─── Upload ───────────────────────────────────────────────────────────────────
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type}`;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 5000);
+}
+
+function setProgress(pct, label) {
+  const pw = document.getElementById('progressWrap');
+  const pb = document.getElementById('progressBar');
+  const pl = document.getElementById('progressLabel');
+  pw.style.display = pct >= 0 ? 'block' : 'none';
+  pb.style.width = pct + '%';
+  pl.textContent = label;
+}
+
+async function uploadFile(file) {
+  if (!file || !file.name.endsWith('.pdf')) {
+    showToast('Please select a valid PDF file.', 'error'); return;
+  }
+  setProgress(20, 'Uploading…');
+  const fd = new FormData();
+  fd.append('file', file);
+  try {
+    setProgress(50, 'Parsing & indexing PDF…');
+    const r = await fetch(`${API}/upload`, { method: 'POST', body: fd });
+    const d = await r.json();
+    setProgress(100, 'Done!');
+    setTimeout(() => setProgress(-1, ''), 1500);
+    if (d.status === 'success') {
+      showToast(`✓ Indexed: ${d.filename} — ${d.pages} pages, ${d.chunks_indexed} chunks`, 'success');
+      loadDocs(); loadStats();
+    } else if (d.status === 'duplicate') {
+      showToast(`Already indexed: ${d.message}`, 'error');
+    } else {
+      showToast(d.detail || 'Upload failed.', 'error');
+    }
+  } catch(e) {
+    setProgress(-1, '');
+    showToast('Connection error — is the server running?', 'error');
+  }
+}
+
+document.getElementById('fileInput').addEventListener('change', e => {
+  if (e.target.files[0]) uploadFile(e.target.files[0]);
+});
+
+const dz = document.getElementById('dropzone');
+dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('drag-over');
+  uploadFile(e.dataTransfer.files[0]);
+});
+
+// ─── Search ───────────────────────────────────────────────────────────────────
+async function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  const el = document.getElementById('searchResults');
+  el.style.display = 'block';
+  el.innerHTML = '<div class="result-meta" style="text-align:center;padding:12px">Searching…</div>';
+  try {
+    const r = await fetch(`${API}/search?q=${encodeURIComponent(q)}&limit=3`);
+    const d = await r.json();
+    if (!d.results.length) {
+      el.innerHTML = `<div class="result-item"><div class="result-meta">NO RESULTS</div>${d.answer}</div>`;
+      return;
+    }
+    el.innerHTML = d.results.map((res, i) => `
+      <div class="result-item">
+        <div class="result-meta">SOURCE: ${res.source} · PAGE ${res.page} · MATCH ${i+1}</div>
+        ${res.content}
+      </div>
+    `).join('');
+  } catch {
+    el.innerHTML = '<div class="result-item" style="color:var(--warn)">Search failed — server error.</div>';
+  }
+}
+
+document.getElementById('searchBtn').addEventListener('click', doSearch);
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+
+// ─── Copy code ────────────────────────────────────────────────────────────────
+function copyCode(elOrId) {
+  const el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId.closest('.code-block');
+  const text = el.innerText.replace(/^COPY\n/, '');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = el.querySelector('.copy-btn');
+    if (btn) { btn.textContent = 'COPIED!'; setTimeout(() => btn.textContent = 'COPY', 1500); }
+  });
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+loadStats();
+loadDocs();
+setInterval(() => { loadStats(); loadDocs(); }, 10000);
+</script>
+</body>
+</html>
